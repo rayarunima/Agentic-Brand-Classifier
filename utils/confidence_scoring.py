@@ -139,7 +139,7 @@ def calculate_brand_confidence(
     context_boost = 0.0
     if context:
         # Boost if entities have high NER confidence
-        if "ner_confidences" in context:
+        if "ner_confidences" in context and context["ner_confidences"]:
             avg_ner_conf = sum(context["ner_confidences"]) / len(context["ner_confidences"])
             context_boost = avg_ner_conf * 0.1
         

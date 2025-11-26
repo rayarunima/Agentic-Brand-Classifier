@@ -134,7 +134,95 @@ def render_sidebar(samples: List[str]) -> Dict[str, bool]:
         index=0
     )
     
+    st.sidebar.divider()
+    st.sidebar.subheader("🗑️ Cache Management")
+    st.sidebar.caption("Clear cache to force fresh processing (useful for testing)")
+    
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        if st.button("Clear All Cache", use_container_width=True, help="Clear all cached data and resources"):
+            st.cache_data.clear()
+            st.cache_resource.clear()
+            st.session_state.clear()
+            # Re-initialize essential session state
+            st.session_state["performance_tracker"] = PerformanceTracker()
+            st.session_state["query_history"] = []
+            st.session_state["orchestrator"] = None
+            st.success("✅ Cache cleared! Refresh the page or run a new query.")
+            st.rerun()
+    
+    with col2:
+        if st.button("Clear Query History", use_container_width=True, help="Clear only query history"):
+            st.session_state["query_history"] = []
+            st.success("✅ Query history cleared!")
+    
+    # Show cache status
+    cache_info = st.sidebar.expander("ℹ️ Cache Info", expanded=False)
+    with cache_info:
+        st.caption("**Cached Functions:**")
+        st.caption("• Orchestrator (resource)")
+        st.caption("• Sample prompts (data)")
+        st.caption("\n**Note:** Results are not cached. Each query runs fresh.")
+        st.caption("Fast responses on repeated queries may be due to:")
+        st.caption("• Model warm-up")
+        st.caption("• System optimization")
+    
     return choice, agent_config, show_metrics, show_history, processing_mode
+
+
+def extract_brand_names(brands_data: Any) -> List[str]:
+    """
+    Extract brand names from brand data structure.
+    Handles both new format (list of dicts with 'name' and 'match_score') 
+    and old format (list of strings) for backward compatibility.
+    
+    Args:
+        brands_data: Can be list of dicts, list of strings, or None
+        
+    Returns:
+        List of brand name strings
+    """
+    if not brands_data:
+        return []
+    
+    if isinstance(brands_data, list):
+        if len(brands_data) > 0 and isinstance(brands_data[0], dict):
+            # New format: list of dicts
+            return [b.get("name", "") for b in brands_data if b.get("name")]
+        else:
+            # Old format: list of strings
+            return [str(b) for b in brands_data if b]
+    
+    return []
+
+
+def format_brands_display(brands_data: Any) -> str:
+    """
+    Format brands for display in the format: "Brand1 (score1) | Brand2 (score2) | ..."
+    
+    Args:
+        brands_data: Can be list of dicts with 'name' and 'match_score', or list of strings
+        
+    Returns:
+        Formatted string for display
+    """
+    if not brands_data:
+        return "—"
+    
+    if isinstance(brands_data, list):
+        if len(brands_data) > 0 and isinstance(brands_data[0], dict):
+            # New format: list of dicts with scores
+            formatted = []
+            for brand in brands_data:
+                name = brand.get("name", "")
+                score = brand.get("match_score", 0.0)
+                formatted.append(f"{name} ({score:.1f})")
+            return " | ".join(formatted)
+        else:
+            # Old format: list of strings (backward compatibility)
+            return ", ".join(str(b) for b in brands_data if b)
+    
+    return "—"
 
 
 def highlight_entities_in_text(text: str, entities: List[Dict]) -> str:
@@ -283,7 +371,8 @@ def render_visualizations(results: Dict, prompt: str):
     if "brand" in results and results["brand"].success:
         brand_result = results["brand"].result
         if isinstance(brand_result, dict):
-            brands = brand_result.get("brands", [])
+            brands_data = brand_result.get("brands", [])
+            brands = extract_brand_names(brands_data)
     
     if "category" in results and results["category"].success:
         category_result = results["category"].result
@@ -298,7 +387,9 @@ def render_visualizations(results: Dict, prompt: str):
             brand_counts = defaultdict(int)
             for entry in st.session_state.query_history[-10:]:  # Last 10 queries
                 if "brands" in entry and entry["brands"]:
-                    for brand in entry["brands"]:
+                    # Extract brand names (handles both new and old format)
+                    brand_names = extract_brand_names(entry["brands"])
+                    for brand in brand_names:
                         brand_counts[brand] += 1
             
             if brand_counts:
@@ -349,6 +440,11 @@ def render_results(orchestration_result: Dict, prompt: str, show_metrics: bool):
     
     st.subheader("🎯 Predictions")
     
+    # Show processing timestamp for cache verification
+    from datetime import datetime
+    processing_time = datetime.now().strftime("%H:%M:%S")
+    st.caption(f"⏱️ Processed at: {processing_time} | Latency: {orchestration_result.get('total_latency_ms', 0):.0f}ms")
+    
     # Execution summary
     execution_order = orchestration_result.get("execution_order", [])
     if execution_order:
@@ -358,16 +454,18 @@ def render_results(orchestration_result: Dict, prompt: str, show_metrics: bool):
     if "brand" in results and results["brand"].success:
         brand_result = results["brand"].result
         if isinstance(brand_result, dict):
-            brands = brand_result.get("brands", [])
+            brands_data = brand_result.get("brands", [])
             confidence = brand_result.get("confidence", 0.0)
         else:
-            brands = brand_result if isinstance(brand_result, list) else []
+            brands_data = brand_result if isinstance(brand_result, list) else []
             confidence = results["brand"].confidence
         
-        if brands:
+        if brands_data:
+            # Format brands with scores
+            brands_display = format_brands_display(brands_data)
             col1, col2 = st.columns([3, 1])
             with col1:
-                st.write("**Brands:**", ", ".join(brands))
+                st.write("**Brands:**", brands_display)
             with col2:
                 st.metric("Confidence", f"{confidence * 100:.1f}%")
         else:
@@ -600,10 +698,11 @@ def render_batch_processing(orchestrator: AgentOrchestrator, agent_config: Dict[
                 brand_result = orchestration.get("results", {}).get("brand", None)
                 category_result = orchestration.get("results", {}).get("category", None)
                 
-                brands = []
+                brands_display = "—"
                 if brand_result and brand_result.success:
                     brand_data = brand_result.result
-                    brands = brand_data.get("brands", []) if isinstance(brand_data, dict) else []
+                    brands_data = brand_data.get("brands", []) if isinstance(brand_data, dict) else []
+                    brands_display = format_brands_display(brands_data)
                 
                 category = ""
                 if category_result and category_result.success:
@@ -612,7 +711,7 @@ def render_batch_processing(orchestrator: AgentOrchestrator, agent_config: Dict[
                 
                 results_data.append({
                     "Prompt": prompt_preview,
-                    "Brands": ", ".join(brands) if brands else "—",
+                    "Brands": brands_display,
                     "Category": category or "—",
                     "Latency (ms)": f"{orchestration.get('total_latency_ms', 0):.1f}",
                     "Status": "✓"

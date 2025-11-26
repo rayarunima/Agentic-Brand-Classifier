@@ -81,7 +81,13 @@ class AgentOrchestrator:
             try:
                 brand_result = self.brand_agent.extract_brand(prompt)
                 if isinstance(brand_result, dict):
-                    context.brands = brand_result.get("brands", [])
+                    brands_data = brand_result.get("brands", [])
+                    # Extract brand names for context (used by other agents)
+                    # Handle both new format (list of dicts) and old format (list of strings)
+                    if brands_data and isinstance(brands_data[0], dict):
+                        context.brands = [b["name"] for b in brands_data]
+                    else:
+                        context.brands = brands_data if isinstance(brands_data, list) else []
                     results["brand"] = AgentResult(
                         agent_name="Brand",
                         result=brand_result,

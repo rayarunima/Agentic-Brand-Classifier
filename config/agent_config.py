@@ -30,7 +30,7 @@ _external_config = load_json_file(CONFIG_FILE, {})
 # Known brands - can be loaded from file or environment variable
 KNOWN_BRANDS = _external_config.get("known_brands") or os.getenv(
     "KNOWN_BRANDS",
-    "Samsung,Apple,LG,Sony,Philips,Xiaomi,OnePlus,Google,Nokia,Motorola,Dell,HP,Lenovo,Asus,Acer,Microsoft,Realme,Oppo,Vivo,TCL,BenQ,Epson,TikTok,YouTube,Netflix,Amazon,Meta,Facebook,Twitter,Instagram"
+    "Samsung,Apple,LG,Sony,Philips,Xiaomi,OnePlus,Google,Nokia,Motorola,Dell,HP,Lenovo,Asus,Acer,Microsoft,Realme,Oppo,Vivo,TCL,BenQ,Epson,TikTok,ByteDance,YouTube,Netflix,Amazon,Meta,Facebook,Twitter,Instagram"
 ).split(",")
 
 KNOWN_BRANDS = [b.strip() for b in KNOWN_BRANDS if b.strip()]
@@ -66,6 +66,63 @@ BRAND_TIERS = _external_config.get("brand_tiers") or {
     "tier3": ["Philips", "TCL", "Motorola", "Nokia", "Asus", "Acer"]
 }
 
+# Brand relationships for entity expansion (knowledge graph)
+BRAND_RELATIONSHIPS = _external_config.get("brand_relationships") or {
+    "parent_companies": {
+        "TikTok": "ByteDance",
+        "Instagram": "Meta",
+        "WhatsApp": "Meta",
+        "Facebook": "Meta",
+        "YouTube": "Google",
+        "Android": "Google",
+        "Chrome": "Google",
+        "Gmail": "Google",
+        "Pixel": "Google",
+        "Nest": "Google",
+        "Prime Video": "Amazon",
+        "Twitch": "Amazon",
+        "Alexa": "Amazon",
+        "Echo": "Amazon",
+        "Kindle": "Amazon",
+        "AirPods": "Apple",
+        "iPhone": "Apple",
+        "iPad": "Apple",
+        "MacBook": "Apple",
+        "iPod": "Apple",
+        "Galaxy": "Samsung",
+        "Note": "Samsung",
+        "Fold": "Samsung",
+        "Xbox": "Microsoft",
+        "Surface": "Microsoft",
+        "LinkedIn": "Microsoft",
+        "Skype": "Microsoft",
+        "Beats": "Apple",
+        "Oculus": "Meta"
+    },
+    "competitors": {
+        "TikTok": ["YouTube", "Instagram Reels", "Snapchat", "Facebook"],
+        "YouTube": ["TikTok", "Vimeo", "Dailymotion", "Netflix"],
+        "Netflix": ["YouTube", "Amazon Prime Video", "Disney+", "Hulu"],
+        "Instagram": ["TikTok", "Snapchat", "Facebook", "Twitter"],
+        "Facebook": ["Instagram", "Twitter", "LinkedIn", "Snapchat"],
+        "Twitter": ["Facebook", "Instagram", "LinkedIn", "Reddit"],
+        "Samsung": ["Apple", "Google", "Xiaomi", "OnePlus"],
+        "Apple": ["Samsung", "Google", "Microsoft", "Sony"],
+        "Google": ["Apple", "Microsoft", "Amazon", "Meta"],
+        "Amazon": ["Google", "Microsoft", "Apple", "Netflix"],
+        "Microsoft": ["Apple", "Google", "Amazon", "Sony"],
+        "Meta": ["Google", "Twitter", "Snapchat", "TikTok"]
+    },
+    "category_brands": {
+        "video_platforms": ["YouTube", "TikTok", "Netflix", "Vimeo", "Dailymotion", "Twitch"],
+        "social_media": ["Facebook", "Instagram", "Twitter", "TikTok", "Snapchat", "LinkedIn"],
+        "streaming": ["Netflix", "YouTube", "Amazon Prime Video", "Disney+", "Hulu", "HBO Max"],
+        "smartphones": ["Apple", "Samsung", "Google", "Xiaomi", "OnePlus", "Oppo", "Vivo"],
+        "tech_companies": ["Apple", "Google", "Microsoft", "Amazon", "Meta", "Samsung"],
+        "ecommerce": ["Amazon", "eBay", "Alibaba", "Walmart", "Target"]
+    }
+}
+
 # Confidence thresholds (configurable)
 CONFIDENCE_THRESHOLDS = _external_config.get("confidence_thresholds") or {
     "very_high": 0.9,
@@ -99,6 +156,11 @@ def get_category_keywords() -> Dict[str, List[str]]:
 def get_brand_tiers() -> Dict[str, List[str]]:
     """Get brand tier mappings."""
     return BRAND_TIERS.copy()
+
+
+def get_brand_relationships() -> Dict[str, Dict]:
+    """Get brand relationships (parent companies, competitors, category mappings)."""
+    return BRAND_RELATIONSHIPS.copy()
 
 
 # TODO: External call opportunity - Load brands from API/database
