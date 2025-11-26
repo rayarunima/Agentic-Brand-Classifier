@@ -29,15 +29,23 @@ print(f"Loaded {len(prompts)} sample prompts.")
 def main():
     brand_agent = BrandAgent()
     category_agent = CategoryAgent()
-    # reach_agent = ReachEstimatorAgent()
-    # lift_agent = BrandLiftAgent()
 
     for prompt in prompts:
-        brands = brand_agent.extract_brand(prompt)
-        category = category_agent.extract_category(prompt)
+        # Extract brands (returns dict with 'brands' and 'confidence')
+        brand_result = brand_agent.extract_brand(prompt)
+        brands = brand_result.get("brands", []) if isinstance(brand_result, dict) else brand_result
+        
+        # Extract category (returns dict with 'category' and 'confidence')
+        category_result = category_agent.extract_category(prompt)
+        category = category_result.get("category", "") if isinstance(category_result, dict) else category_result
+        
         print(f"\nPrompt: {prompt}")
         print(f"→ Brands: {brands}")
+        if isinstance(brand_result, dict) and "confidence" in brand_result:
+            print(f"  Confidence: {brand_result['confidence'] * 100:.1f}%")
         print(f"→ Category: {category}")
+        if isinstance(category_result, dict) and "confidence" in category_result:
+            print(f"  Confidence: {category_result['confidence'] * 100:.1f}%")
 
 if __name__ == "__main__":
     main()

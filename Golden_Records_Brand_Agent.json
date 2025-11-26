@@ -1,0 +1,848 @@
+[
+  {
+    "prompt": "Is Fold 7 better than Galaxy series?",
+    "name": ["Fold 7", "Galaxy series"],
+    "brand": ["Samsung", "Samsung"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "How has Jordan performed last year?",
+    "name": ["Jordan"],
+    "brand": ["Nike"],
+    "category": "Footwear"
+  },
+  {
+    "prompt": "Should I buy the iPhone 15 or wait for the Pixel 9?",
+    "name": ["iPhone 15", "Pixel 9"],
+    "brand": ["Apple", "Google"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the AirPods Pro still worth it compared to Beats Studio Buds?",
+    "name": ["AirPods Pro", "Beats Studio Buds"],
+    "brand": ["Apple", "Beats"],
+    "category": "Earbuds"
+  },
+  {
+    "prompt": "Does the Redmi Note 13 perform better than Note 12?",
+    "name": ["Redmi Note 13", "Note 12"],
+    "brand": ["Xiaomi", "Xiaomi"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is Echo Dot more powerful than Google Nest Mini?",
+    "name": ["Echo Dot", "Google Nest Mini"],
+    "brand": ["Amazon", "Google"],
+    "category": "Smart Speaker"
+  },
+  {
+    "prompt": "Are Adidas Ultraboost better than Pegasus 40 for running?",
+    "name": ["Adidas Ultraboost", "Pegasus 40"],
+    "brand": ["Adidas", "Nike"],
+    "category": "Running Shoes"
+  },
+  {
+    "prompt": "Does Surface Pro 9 support external monitors?",
+    "name": ["Surface Pro 9"],
+    "brand": ["Microsoft"],
+    "category": "Laptop/Tablet Hybrid"
+  },
+  {
+    "prompt": "Is PS5 better optimized for racing games than Xbox Series X?",
+    "name": ["PS5", "Xbox Series X"],
+    "brand": ["Sony", "Microsoft"],
+    "category": "Gaming Console"
+  },
+  {
+    "prompt": "Is OnePlus 12 faster than Samsung S24?",
+    "name": ["OnePlus 12", "Samsung S24"],
+    "brand": ["OnePlus", "Samsung"],
+    "category": "Smartphone"
+  },
+ 
+  {
+    "prompt": "Will Hero 12 Black survive high-altitude recording?",
+    "name": ["Hero 12 Black"],
+    "brand": ["GoPro"],
+    "category": "Action Camera"
+  },
+  {
+    "prompt": "Is Kindle Paperwhite more durable than Kobo Clara?",
+    "name": ["Kindle Paperwhite", "Kobo Clara"],
+    "brand": ["Amazon", "Kobo"],
+    "category": "E-reader"
+  },
+  {
+    "prompt": "Should I buy Vivo X100 or Oppo Find X7?",
+    "name": ["Vivo X100", "Oppo Find X7"],
+    "brand": ["Vivo", "Oppo"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Has the Yamaha FZ V4 improved handling?",
+    "name": ["Yamaha FZ V4"],
+    "brand": ["Yamaha"],
+    "category": "Motorcycle"
+  },
+  {
+    "prompt": "Does Dyson V15 clean better than V12?",
+    "name": ["Dyson V15", "V12"],
+    "brand": ["Dyson", "Dyson"],
+    "category": "Vacuum Cleaner"
+  },
+  {
+    "prompt": "Is MacBook Air M3 enough or should I get the MacBook Pro?",
+    "name": ["MacBook Air M3", "MacBook Pro"],
+    "brand": ["Apple", "Apple"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Can Tesla Model 3 charge using solar panels?",
+    "name": ["Tesla Model 3"],
+    "brand": ["Tesla"],
+    "category": "Electric Car"
+  },
+  {
+    "prompt": "Does the Lego Technic Ferrari kit include rubber tires?",
+    "name": ["Lego Technic Ferrari"],
+    "brand": ["Lego"],
+    "category": "Toy/Model Kit"
+  },
+  {
+    "prompt": "Is NMD more comfortable than Ultraboost?",
+    "name": ["NMD", "Ultraboost"],
+    "brand": ["Adidas", "Adidas"],
+    "category": "Sneakers"
+  },
+  {
+    "prompt": "How does Patagonia Nano Puff compare to North Face Thermoball?",
+    "name": ["Patagonia Nano Puff", "North Face Thermoball"],
+    "brand": ["Patagonia", "The North Face"],
+    "category": "Jackets"
+  },
+ 
+  {
+    "prompt": "Is Dyson Supersonic worth more than the Airwrap?",
+    "name": ["Dyson Supersonic", "Airwrap"],
+    "brand": ["Dyson", "Dyson"],
+    "category": "Hair Styling"
+  },
+  {
+    "prompt": "Is the Ninja Air Fryer Max healthier than Philips Airfryer XXL?",
+    "name": ["Ninja Air Fryer Max", "Philips Airfryer XXL"],
+    "brand": ["Ninja", "Philips"],
+    "category": "Air Fryer"
+  },
+  {
+    "prompt": "Does the ROG Phone 8 outperform the Black Shark 6?",
+    "name": ["ROG Phone 8", "Black Shark 6"],
+    "brand": ["Asus", "Xiaomi"],
+    "category": "Gaming Smartphone"
+  },
+  {
+    "prompt": "Is the MSI Stealth 16 better than Lenovo Legion 7?",
+    "name": ["MSI Stealth 16", "Lenovo Legion 7"],
+    "brand": ["MSI", "Lenovo"],
+    "category": "Gaming Laptop"
+  },
+  {
+    "prompt": "Are Ray-Ban Meta glasses better than Snap Spectacles?",
+    "name": ["Ray-Ban Meta", "Snap Spectacles"],
+    "brand": ["Meta", "Snap"],
+    "category": "Smart Glasses"
+  },
+  {
+    "prompt": "Is Beosound A7 louder than Bose Home Speaker 500?",
+    "name": ["Beosound A7", "Bose Home Speaker 500"],
+    "brand": ["Bang & Olufsen", "Bose"],
+    "category": "Speaker"
+  },
+  {
+    "prompt": "Does Apple Watch Ultra 2 last longer than Garmin Fenix 7?",
+    "name": ["Apple Watch Ultra 2", "Garmin Fenix 7"],
+    "brand": ["Apple", "Garmin"],
+    "category": "Smartwatch"
+  },
+  {
+    "prompt": "Is Galaxy Watch 6 accurate for heart monitoring compared to Fitbit Sense 2?",
+    "name": ["Galaxy Watch 6", "Fitbit Sense 2"],
+    "brand": ["Samsung", "Fitbit"],
+    "category": "Smartwatch"
+  },
+  {
+    "prompt": "Does the Dyson Purifier Cool TP09 filter smoke better than Mi Air Purifier 4?",
+    "name": ["Dyson Purifier Cool TP09", "Mi Air Purifier 4"],
+    "brand": ["Dyson", "Xiaomi"],
+    "category": "Air Purifier"
+  },
+  {
+    "prompt": "Is the Honda Activa 6G smoother than Jupiter 125?",
+    "name": ["Activa 6G", "Jupiter 125"],
+    "brand": ["Honda", "TVS"],
+    "category": "Scooter"
+  },
+ 
+  {
+    "prompt": "How does the Fire TV Cube compare with Apple TV 4K?",
+    "name": ["Fire TV Cube", "Apple TV 4K"],
+    "brand": ["Amazon", "Apple"],
+    "category": "Streaming Device"
+  },
+  {
+    "prompt": "Is JBL Boombox 3 louder than Sony XB100?",
+    "name": ["JBL Boombox 3", "Sony XB100"],
+    "brand": ["JBL", "Sony"],
+    "category": "Bluetooth Speaker"
+  },
+  {
+    "prompt": "Does the ThinkPad X1 Carbon outperform the Dell XPS 13?",
+    "name": ["ThinkPad X1 Carbon", "Dell XPS 13"],
+    "brand": ["Lenovo", "Dell"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Is Logitech MX Master 3S better than Apple Magic Mouse?",
+    "name": ["MX Master 3S", "Magic Mouse"],
+    "brand": ["Logitech", "Apple"],
+    "category": "Computer Mouse"
+  },
+  {
+    "prompt": "Is the Canon EOS R6 better than Sony A7 IV for video?",
+    "name": ["Canon EOS R6", "Sony A7 IV"],
+    "brand": ["Canon", "Sony"],
+    "category": "Mirrorless Camera"
+  },
+  {
+    "prompt": "Should I upgrade from GoPro Hero 11 to Hero 12 Black?",
+    "name": ["Hero 11", "Hero 12 Black"],
+    "brand": ["GoPro", "GoPro"],
+    "category": "Action Camera"
+  },
+  {
+    "prompt": "Is the Nikon Z30 a good alternative to Fujifilm X-S20?",
+    "name": ["Nikon Z30", "Fujifilm X-S20"],
+    "brand": ["Nikon", "Fujifilm"],
+    "category": "Mirrorless Camera"
+  },
+  {
+    "prompt": "Is Redgear Pro better than Xbox Wireless Controller?",
+    "name": ["Redgear Pro", "Xbox Wireless Controller"],
+    "brand": ["Redgear", "Microsoft"],
+    "category": "Game Controller"
+  },
+  {
+    "prompt": "Does AirPods Max beat Sony WH-1000XM5 in comfort?",
+    "name": ["AirPods Max", "Sony WH-1000XM5"],
+    "brand": ["Apple", "Sony"],
+    "category": "Headphones"
+  },
+  {
+    "prompt": "Is the Galaxy Buds 3 Pro better than OnePlus Buds Pro 2?",
+    "name": ["Galaxy Buds 3 Pro", "OnePlus Buds Pro 2"],
+    "brand": ["Samsung", "OnePlus"],
+    "category": "Earbuds"
+  },
+  {
+    "prompt": "How does the iRobot Roomba i7 compare to Roomba j7?",
+    "name": ["Roomba i7", "Roomba j7"],
+    "brand": ["iRobot", "iRobot"],
+    "category": "Robot Vacuum"
+  },
+  {
+    "prompt": "Is the Dyson Gen5detect better than V15?",
+    "name": ["Dyson Gen5detect", "V15"],
+    "brand": ["Dyson", "Dyson"],
+    "category": "Vacuum Cleaner"
+  },
+  {
+    "prompt": "Should I choose Redmi 13C over Samsung A14?",
+    "name": ["Redmi 13C", "Samsung A14"],
+    "brand": ["Xiaomi", "Samsung"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Does Adidas Samba last longer than Nike Dunk Low?",
+    "name": ["Adidas Samba", "Nike Dunk Low"],
+    "brand": ["Adidas", "Nike"],
+    "category": "Sneakers"
+  },
+  {
+    "prompt": "Is the Fossil Gen 6 better than TicWatch Pro 5?",
+    "name": ["Fossil Gen 6", "TicWatch Pro 5"],
+    "brand": ["Fossil", "Mobvoi"],
+    "category": "Smartwatch"
+  },
+  {
+    "prompt": "Is Mac Studio more powerful than Mac Mini M2?",
+    "name": ["Mac Studio", "Mac Mini M2"],
+    "brand": ["Apple", "Apple"],
+    "category": "Desktop Computer"
+  },
+  {
+    "prompt": "Should I buy JBL Tune 760 or Boat Nirvana 751?",
+    "name": ["JBL Tune 760", "Boat Nirvana 751"],
+    "brand": ["JBL", "boAt"],
+    "category": "Headphones"
+  },
+  {
+    "prompt": "Does the HP Omen 16 beat the Acer Predator Helios?",
+    "name": ["HP Omen 16", "Acer Predator Helios"],
+    "brand": ["HP", "Acer"],
+    "category": "Gaming Laptop"
+  },
+  {
+    "prompt": "Is the Braun Silk Expert Pro 5 better than Philips Lumea?",
+    "name": ["Silk Expert Pro 5", "Philips Lumea"],
+    "brand": ["Braun", "Philips"],
+    "category": "Hair Removal Device"
+  },
+  {
+    "prompt": "Are Dr. Martens 1460 more durable than Timberland Premium?",
+    "name": ["Dr. Martens 1460", "Timberland Premium"],
+    "brand": ["Dr. Martens", "Timberland"],
+    "category": "Boots"
+  },
+ 
+  {
+    "prompt": "Is Bose QuietComfort Ultra better than Sennheiser Momentum 4?",
+    "name": ["QuietComfort Ultra", "Momentum 4"],
+    "brand": ["Bose", "Sennheiser"],
+    "category": "Headphones"
+  },
+  {
+    "prompt": "Is the Pixel Watch 2 more accurate than Galaxy Watch 6?",
+    "name": ["Pixel Watch 2", "Galaxy Watch 6"],
+    "brand": ["Google", "Samsung"],
+    "category": "Smartwatch"
+  },
+  {
+    "prompt": "Should I upgrade from iPhone 13 to iPhone 15?",
+    "name": ["iPhone 13", "iPhone 15"],
+    "brand": ["Apple", "Apple"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the Dyson V8 still good compared to V12?",
+    "name": ["Dyson V8", "V12"],
+    "brand": ["Dyson", "Dyson"],
+    "category": "Vacuum Cleaner"
+  },
+  {
+    "prompt": "Is Asus Zenbook 14 better than HP Envy x360?",
+    "name": ["Zenbook 14", "Envy x360"],
+    "brand": ["Asus", "HP"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Does Jabra Elite 10 outperform Elite 7 Pro?",
+    "name": ["Elite 10", "Elite 7 Pro"],
+    "brand": ["Jabra", "Jabra"],
+    "category": "Earbuds"
+  },
+  {
+    "prompt": "Is the GoPro Max smoother than Insta360 X3?",
+    "name": ["GoPro Max", "Insta360 X3"],
+    "brand": ["GoPro", "Insta360"],
+    "category": "360 Camera"
+  },
+  {
+    "prompt": "Is the Redmi Pad SE better than Lenovo M10 Plus?",
+    "name": ["Redmi Pad SE", "Lenovo M10 Plus"],
+    "brand": ["Xiaomi", "Lenovo"],
+    "category": "Tablet"
+  },
+  {
+    "prompt": "Does Whirlpool FreshMagic 7 outperform LG Convertible 5-in-1?",
+    "name": ["FreshMagic 7", "Convertible 5-in-1"],
+    "brand": ["Whirlpool", "LG"],
+    "category": "Refrigerator"
+  },
+  {
+    "prompt": "Is Philips Hue better than Wiz Smart Lights?",
+    "name": ["Philips Hue", "Wiz Smart Lights"],
+    "brand": ["Philips", "Wiz"],
+    "category": "Smart Lighting"
+  },
+ 
+  {
+    "prompt": "Is the Nikon Z50 better than Canon EOS RP?",
+    "name": ["Nikon Z50", "Canon EOS RP"],
+    "brand": ["Nikon", "Canon"],
+    "category": "Mirrorless Camera"
+  },
+  {
+    "prompt": "Is the Samsung A54 camera better than Realme 11 Pro?",
+    "name": ["Samsung A54", "Realme 11 Pro"],
+    "brand": ["Samsung", "Realme"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Does the Asus ROG Strix G16 outperform Dell G15?",
+    "name": ["ROG Strix G16", "Dell G15"],
+    "brand": ["Asus", "Dell"],
+    "category": "Gaming Laptop"
+  },
+  {
+    "prompt": "Is the JBL Charge 5 louder than Sony SRS-XB33?",
+    "name": ["JBL Charge 5", "Sony SRS-XB33"],
+    "brand": ["JBL", "Sony"],
+    "category": "Bluetooth Speaker"
+  },
+  {
+    "prompt": "Is the Garmin Venu 3 better than Amazfit GTR 4?",
+    "name": ["Garmin Venu 3", "Amazfit GTR 4"],
+    "brand": ["Garmin", "Amazfit"],
+    "category": "Smartwatch"
+  },
+  {
+    "prompt": "Is Realme Buds Air 5 better than Oppo Enco Air 3 Pro?",
+    "name": ["Realme Buds Air 5", "Oppo Enco Air 3 Pro"],
+    "brand": ["Realme", "Oppo"],
+    "category": "Earbuds"
+  },
+  {
+    "prompt": "Is PS5 Digital Edition cheaper than PS5 Standard?",
+    "name": ["PS5 Digital Edition", "PS5 Standard"],
+    "brand": ["Sony", "Sony"],
+    "category": "Gaming Console"
+  },
+  {
+    "prompt": "Does the Honda CB350 outperform the Royal Enfield Classic 350?",
+    "name": ["Honda CB350", "Classic 350"],
+    "brand": ["Honda", "Royal Enfield"],
+    "category": "Motorcycle"
+  },
+  {
+    "prompt": "Is LG Gram 17 lighter than MacBook Air?",
+    "name": ["LG Gram 17", "MacBook Air"],
+    "brand": ["LG", "Apple"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Does the Mi Smart Speaker 2 sound better than Echo Pop?",
+    "name": ["Mi Smart Speaker 2", "Echo Pop"],
+    "brand": ["Xiaomi", "Amazon"],
+    "category": "Smart Speaker"
+  },
+ 
+  {
+    "prompt": "Is the Dyson Corrale better than GHD Platinum+?",
+    "name": ["Dyson Corrale", "GHD Platinum+"],
+    "brand": ["Dyson", "GHD"],
+    "category": "Hair Styling"
+  },
+  {
+    "prompt": "Does the Dell Inspiron 14 beat Lenovo IdeaPad Slim 5?",
+    "name": ["Inspiron 14", "IdeaPad Slim 5"],
+    "brand": ["Dell", "Lenovo"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Is Google Pixel 8 better than iPhone 15?",
+    "name": ["Pixel 8", "iPhone 15"],
+    "brand": ["Google", "Apple"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the Amazon Basics 4K Fire TV better than Mi TV 5X?",
+    "name": ["Fire TV 4K", "Mi TV 5X"],
+    "brand": ["Amazon", "Xiaomi"],
+    "category": "Television"
+  },
+  {
+    "prompt": "Is the Canon R5 better than Nikon Z8 for wildlife shooting?",
+    "name": ["Canon R5", "Nikon Z8"],
+    "brand": ["Canon", "Nikon"],
+    "category": "Mirrorless Camera"
+  },
+  {
+    "prompt": "Will the Samsung S22 Ultra outperform the OnePlus 11?",
+    "name": ["Samsung S22 Ultra", "OnePlus 11"],
+    "brand": ["Samsung", "OnePlus"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the Dyson V10 still competitive with the Dyson V15?",
+    "name": ["Dyson V10", "Dyson V15"],
+    "brand": ["Dyson", "Dyson"],
+    "category": "Vacuum Cleaner"
+  },
+  {
+    "prompt": "Is Acer Swift Go 14 better than MacBook Air M2?",
+    "name": ["Acer Swift Go 14", "MacBook Air M2"],
+    "brand": ["Acer", "Apple"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Does the Cosco TuffStuff treadmill beat PowerMax TDA-230?",
+    "name": ["TuffStuff", "PowerMax TDA-230"],
+    "brand": ["Cosco", "PowerMax"],
+    "category": "Treadmill"
+  },
+  {
+    "prompt": "Is Hush Puppies Walkmate softer than Skechers Arch Fit?",
+    "name": ["Walkmate", "Arch Fit"],
+    "brand": ["Hush Puppies", "Skechers"],
+    "category": "Walking Shoes"
+  },
+ 
+  {
+    "prompt": "Is the HP Pavilion 14 better than Asus VivoBook 15?",
+    "name": ["Pavilion 14", "VivoBook 15"],
+    "brand": ["HP", "Asus"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Is Samsung Galaxy Z Flip 5 more durable than Motorola Razr 40 Ultra?",
+    "name": ["Z Flip 5", "Razr 40 Ultra"],
+    "brand": ["Samsung", "Motorola"],
+    "category": "Foldable Smartphone"
+  },
+  {
+    "prompt": "Should I buy the Realme Narzo 60 or the Samsung M34?",
+    "name": ["Narzo 60", "Samsung M34"],
+    "brand": ["Realme", "Samsung"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the LG Tone Free T90 better than Sony LinkBuds S?",
+    "name": ["Tone Free T90", "LinkBuds S"],
+    "brand": ["LG", "Sony"],
+    "category": "Earbuds"
+  },
+  {
+    "prompt": "Does the Fastrack Revoltt FS1 beat the Noise ColorFit Ultra 3?",
+    "name": ["Revoltt FS1", "ColorFit Ultra 3"],
+    "brand": ["Fastrack", "Noise"],
+    "category": "Smartwatch"
+  },
+  {
+    "prompt": "Is the Redmi K50i better than Poco X5 Pro?",
+    "name": ["Redmi K50i", "Poco X5 Pro"],
+    "brand": ["Xiaomi", "Poco"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Does the BenQ GW2480 outperform Dell P2419H?",
+    "name": ["GW2480", "P2419H"],
+    "brand": ["BenQ", "Dell"],
+    "category": "Monitor"
+  },
+  {
+    "prompt": "Is the Mi Trimmer 2C better than Philips OneBlade?",
+    "name": ["Mi Trimmer 2C", "Philips OneBlade"],
+    "brand": ["Xiaomi", "Philips"],
+    "category": "Trimmer"
+  },
+  {
+    "prompt": "Is Apple Magic Keyboard better than Logitech MX Keys?",
+    "name": ["Magic Keyboard", "MX Keys"],
+    "brand": ["Apple", "Logitech"],
+    "category": "Keyboard"
+  },
+{
+    "prompt": "Should I get the Kindle Oasis or Kindle Paperwhite Signature Edition?",
+    "name": ["Kindle Oasis", "Kindle Paperwhite Signature Edition"],
+    "brand": ["Amazon", "Amazon"],
+    "category": "E-reader"
+  },
+  {
+    "prompt": "Is the Samsung Odyssey G7 better than LG Ultragear 27GP850?",
+    "name": ["Odyssey G7", "Ultragear 27GP850"],
+    "brand": ["Samsung", "LG"],
+    "category": "Monitor"
+  },
+  {
+    "prompt": "Does the Boat Airdopes 441 beat Realme Buds Air 3?",
+    "name": ["Airdopes 441", "Buds Air 3"],
+    "brand": ["boAt", "Realme"],
+    "category": "Earbuds"
+  },
+  {
+    "prompt": "Is the Tata Punch better than Maruti Ignis?",
+    "name": ["Tata Punch", "Maruti Ignis"],
+    "brand": ["Tata", "Maruti Suzuki"],
+    "category": "Car"
+  },
+  {
+    "prompt": "Is the Volvo XC40 better than BMW X1?",
+    "name": ["XC40", "BMW X1"],
+    "brand": ["Volvo", "BMW"],
+    "category": "Car"
+  },
+  {
+    "prompt": "Does the JBL Cinema SB190 beat Sony HT-S20R?",
+    "name": ["SB190", "HT-S20R"],
+    "brand": ["JBL", "Sony"],
+    "category": "Soundbar"
+  },
+  {
+    "prompt": "Is the IQOO 12 faster than OnePlus 12?",
+    "name": ["IQOO 12", "OnePlus 12"],
+    "brand": ["iQOO", "OnePlus"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is Phantom V Fold better than Galaxy Z Fold 5?",
+    "name": ["Phantom V Fold", "Z Fold 5"],
+    "brand": ["Tecno", "Samsung"],
+    "category": "Foldable Smartphone"
+  },
+  {
+    "prompt": "Is the Nothing Phone 2 better than iPhone SE 2022?",
+    "name": ["Nothing Phone 2", "iPhone SE 2022"],
+    "brand": ["Nothing", "Apple"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Does the Redmi A3 perform better than Samsung A04s?",
+    "name": ["Redmi A3", "Samsung A04s"],
+    "brand": ["Xiaomi", "Samsung"],
+    "category": "Smartphone"
+  },
+ 
+  {
+    "prompt": "Is Apple HomePod Mini better than Google Nest Audio?",
+    "name": ["HomePod Mini", "Nest Audio"],
+    "brand": ["Apple", "Google"],
+    "category": "Smart Speaker"
+  },
+  {
+    "prompt": "Is the Lenovo Tab P12 better than Galaxy Tab S7 FE?",
+    "name": ["Tab P12", "Tab S7 FE"],
+    "brand": ["Lenovo", "Samsung"],
+    "category": "Tablet"
+  },
+  {
+    "prompt": "Is Xiaomi Pad 6 smoother than Realme Pad X?",
+    "name": ["Xiaomi Pad 6", "Realme Pad X"],
+    "brand": ["Xiaomi", "Realme"],
+    "category": "Tablet"
+  },
+  {
+    "prompt": "Does the LG 27MP400 outperform the Samsung F27T350?",
+    "name": ["27MP400", "F27T350"],
+    "brand": ["LG", "Samsung"],
+    "category": "Monitor"
+  },
+  {
+    "prompt": "Is Ferrari SF90 faster than Lamborghini Huracan EVO?",
+    "name": ["SF90", "Huracan EVO"],
+    "brand": ["Ferrari", "Lamborghini"],
+    "category": "Sports Car"
+  },
+  {
+    "prompt": "Does the Nike Vaporfly 3 outperform Adidas Adios Pro 3?",
+    "name": ["Vaporfly 3", "Adios Pro 3"],
+    "brand": ["Nike", "Adidas"],
+    "category": "Running Shoes"
+  },
+  {
+    "prompt": "Is the Dyson Hot+Cool better than Havells OFR 11?",
+    "name": ["Dyson Hot+Cool", "Havells OFR 11"],
+    "brand": ["Dyson", "Havells"],
+    "category": "Heater"
+  },
+  {
+    "prompt": "Is Oppo Reno 10 better than Vivo V27?",
+    "name": ["Reno 10", "V27"],
+    "brand": ["Oppo", "Vivo"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Does the Sony A6400 outperform the Fujifilm X-T30 II?",
+    "name": ["Sony A6400", "X-T30 II"],
+    "brand": ["Sony", "Fujifilm"],
+    "category": "Mirrorless Camera"
+  },
+  {
+    "prompt": "Is the Redmi 12C better than Realme C30s?",
+    "name": ["Redmi 12C", "Realme C30s"],
+    "brand": ["Xiaomi", "Realme"],
+    "category": "Smartphone"
+  },
+ 
+  {
+    "prompt": "Is the LG G3 OLED better than Sony A80L?",
+    "name": ["LG G3 OLED", "Sony A80L"],
+    "brand": ["LG", "Sony"],
+    "category": "Television"
+  },
+  {
+    "prompt": "Should I buy the Honda City Hybrid or the Skoda Slavia?",
+    "name": ["Honda City Hybrid", "Skoda Slavia"],
+    "brand": ["Honda", "Skoda"],
+    "category": "Car"
+  },
+  {
+    "prompt": "Is Asus TUF A15 better than HP Victus 16?",
+    "name": ["TUF A15", "Victus 16"],
+    "brand": ["Asus", "HP"],
+    "category": "Gaming Laptop"
+  },
+  {
+    "prompt": "Does the Boat Rockerz 551 ANC beat JBL Tune 760NC?",
+    "name": ["Rockerz 551 ANC", "Tune 760NC"],
+    "brand": ["boAt", "JBL"],
+    "category": "Headphones"
+  },
+  {
+    "prompt": "Is the Realme Watch 3 Pro better than Amazfit Bip 3?",
+    "name": ["Watch 3 Pro", "Bip 3"],
+    "brand": ["Realme", "Amazfit"],
+    "category": "Smartwatch"
+  },
+  {
+    "prompt": "Does the HP LaserJet Pro M126NW beat Brother DCP-L2541DW?",
+    "name": ["M126NW", "L2541DW"],
+    "brand": ["HP", "Brother"],
+    "category": "Printer"
+  },
+  {
+    "prompt": "Is the Yamaha MT15 better than the Pulsar NS200?",
+    "name": ["MT15", "NS200"],
+    "brand": ["Yamaha", "Bajaj"],
+    "category": "Motorcycle"
+  },
+  {
+    "prompt": "Is the Tata Nexon EV Max better than MG ZS EV?",
+    "name": ["Nexon EV Max", "ZS EV"],
+    "brand": ["Tata", "MG"],
+    "category": "Electric Car"
+  },
+  {
+    "prompt": "Does the Sony A7C II outperform Canon EOS R8?",
+    "name": ["A7C II", "EOS R8"],
+    "brand": ["Sony", "Canon"],
+    "category": "Mirrorless Camera"
+  },
+  {
+    "prompt": "Is the MacBook Pro M3 Max better than Razer Blade 16?",
+    "name": ["MacBook Pro M3 Max", "Razer Blade 16"],
+    "brand": ["Apple", "Razer"],
+    "category": "Laptop"
+  },
+ 
+  {
+    "prompt": "Is Huawei MateBook D16 better than Acer Aspire 7?",
+    "name": ["MateBook D16", "Aspire 7"],
+    "brand": ["Huawei", "Acer"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Does the Panasonic Lumix G7 still beat Canon M50?",
+    "name": ["Lumix G7", "Canon M50"],
+    "brand": ["Panasonic", "Canon"],
+    "category": "Mirrorless Camera"
+  },
+  {
+    "prompt": "Is the Lenovo LOQ 15 better than Legion 5?",
+    "name": ["LOQ 15", "Legion 5"],
+    "brand": ["Lenovo", "Lenovo"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Should I get Galaxy A25 or Realme Narzo 70 Pro?",
+    "name": ["Galaxy A25", "Narzo 70 Pro"],
+    "brand": ["Samsung", "Realme"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the Mi Soundbar 2.1 better than Boat Aavante Bar 1500?",
+    "name": ["Mi Soundbar 2.1", "Aavante Bar 1500"],
+    "brand": ["Xiaomi", "boAt"],
+    "category": "Soundbar"
+  },
+  {
+    "prompt": "Does the Acer Nitro 5 beat Dell Alienware M15?",
+    "name": ["Nitro 5", "Alienware M15"],
+    "brand": ["Acer", "Dell"],
+    "category": "Gaming Laptop"
+  },
+  {
+    "prompt": "Is Pixel 7a better than Nothing Phone 1?",
+    "name": ["Pixel 7a", "Nothing Phone 1"],
+    "brand": ["Google", "Nothing"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the Bose Sport Earbuds better than Sony WF-C500?",
+    "name": ["Bose Sport Earbuds", "WF-C500"],
+    "brand": ["Bose", "Sony"],
+    "category": "Earbuds"
+  },
+  {
+    "prompt": "Does Kindle Basic 2022 beat Kobo Nia?",
+    "name": ["Kindle Basic 2022", "Kobo Nia"],
+    "brand": ["Amazon", "Kobo"],
+    "category": "E-reader"
+  },
+  {
+    "prompt": "Is Samsung M51 battery better than A52?",
+    "name": ["Samsung M51", "A52"],
+    "brand": ["Samsung", "Samsung"],
+    "category": "Smartphone"
+  },
+ 
+  {
+    "prompt": "Is the Vivo Y200L better than Oppo A79?",
+    "name": ["Vivo Y200L", "Oppo A79"],
+    "brand": ["Vivo", "Oppo"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is Hyundai Creta better than Kia Seltos?",
+    "name": ["Creta", "Seltos"],
+    "brand": ["Hyundai", "Kia"],
+    "category": "SUV"
+  },
+  {
+    "prompt": "Does the Samsung Galaxy M34 outperform Realme 10 Pro?",
+    "name": ["Galaxy M34", "Realme 10 Pro"],
+    "brand": ["Samsung", "Realme"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the Sony WH-XB910N better than JBL Live 660NC?",
+    "name": ["WH-XB910N", "Live 660NC"],
+    "brand": ["Sony", "JBL"],
+    "category": "Headphones"
+  },
+  {
+    "prompt": "Should I upgrade from iPad Air 4 to iPad Air 5?",
+    "name": ["iPad Air 4", "iPad Air 5"],
+    "brand": ["Apple", "Apple"],
+    "category": "Tablet"
+  },
+  {
+    "prompt": "Is Xiaomi 14 Pro better than Samsung S24 Ultra?",
+    "name": ["Xiaomi 14 Pro", "Samsung S24 Ultra"],
+    "brand": ["Xiaomi", "Samsung"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Does the OnePlus Nord CE 3 Lite beat Samsung A23?",
+    "name": ["Nord CE 3 Lite", "Samsung A23"],
+    "brand": ["OnePlus", "Samsung"],
+    "category": "Smartphone"
+  },
+  {
+    "prompt": "Is the Dell XPS 15 better than MacBook Pro 16?",
+    "name": ["Dell XPS 15", "MacBook Pro 16"],
+    "brand": ["Dell", "Apple"],
+    "category": "Laptop"
+  },
+  {
+    "prompt": "Is the Canon G7X Mark III better than Sony ZV-1?",
+    "name": ["G7X Mark III", "Sony ZV-1"],
+    "brand": ["Canon", "Sony"],
+    "category": "Compact Camera"
+  },
+  {
+    "prompt": "Should I buy the Honda Elevate or the Hyundai Venue?",
+    "name": ["Honda Elevate", "Hyundai Venue"],
+    "brand": ["Honda", "Hyundai"],
+    "category": "SUV"
+  }
+]
+ 
