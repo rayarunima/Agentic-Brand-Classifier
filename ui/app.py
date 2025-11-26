@@ -54,11 +54,72 @@ def render_sidebar(samples: List[str]) -> str:
     choice = st.sidebar.selectbox("Pick a sample", options=[""] + samples, index=0)
     if choice:
         st.sidebar.success("Loaded sample prompt.")
+
+    # Agent toggles
+    st.sidebar.divider()
+    st.sidebar.subheader("Agents")
+
+    # Primary agents (fully wired)
+    st.sidebar.toggle(
+        "Brand agent",
+        key="use_brand_agent",
+        value=st.session_state.get("use_brand_agent", True),
+        help="Enable or disable the Brand extraction agent.",
+    )
+    st.sidebar.toggle(
+        "Category agent",
+        key="use_category_agent",
+        value=st.session_state.get("use_category_agent", True),
+        help="Enable or disable the Category extraction agent.",
+    )
+
+    # WIP agents (UI only, no backend calls yet)
+    campaign_on = st.sidebar.toggle(
+        "Campaign agent (WIP)",
+        key="use_campaign_agent",
+        value=st.session_state.get("use_campaign_agent", False),
+    )
+    reach_on = st.sidebar.toggle(
+        "Reach agent (WIP)",
+        key="use_reach_agent",
+        value=st.session_state.get("use_reach_agent", False),
+    )
+    brand_lift_on = st.sidebar.toggle(
+        "Brand lift agent (WIP)",
+        key="use_brand_lift_agent",
+        value=st.session_state.get("use_brand_lift_agent", False),
+    )
+
+    # If any WIP toggle is turned on, immediately show info and revert to OFF
+    if campaign_on or reach_on or brand_lift_on:
+        st.sidebar.info("Work in Progress – have patience")
+        if campaign_on:
+            st.session_state["use_campaign_agent"] = False
+        if reach_on:
+            st.session_state["use_reach_agent"] = False
+        if brand_lift_on:
+            st.session_state["use_brand_lift_agent"] = False
+
     return choice
 
 
-def show_results(prompt: str, brands: List[str], category: str) -> None:
+def show_results(
+    prompt: str, brands: List[str], category: str, active_agents: List[str] | None = None
+) -> None:
     st.subheader("Predictions")
+    active_agents = active_agents or []
+    agent_count = len(active_agents)
+    agent_label = ", ".join(active_agents) if active_agents else "None"
+
+    # Simple modern badge-style summary of which agents ran
+    badge = f"{agent_count} agent{'s' if agent_count != 1 else ''}"
+    st.markdown(
+        f"**Active agents:** {agent_label} &nbsp;&nbsp; "
+        f"<span style='padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,0.15);"
+        f"font-size:0.8rem;opacity:0.8;'>{badge}</span>",
+        unsafe_allow_html=True,
+    )
+
     st.write("**Brands:**", ", ".join(brands) if brands else "—")
     st.write("**Category:**", category or "—")
 
@@ -83,6 +144,9 @@ def main():
     samples = load_samples()
     preset_prompt = render_sidebar(samples)
 
+    use_brand_agent = st.session_state.get("use_brand_agent", True)
+    use_category_agent = st.session_state.get("use_category_agent", True)
+
     st.title(STREAMLIT_TITLE)
     st.caption(
         "Explore how spaCy NER + DSPy validators collaborate to detect brands and "
@@ -105,11 +169,20 @@ def main():
             return
 
         st.session_state["last_prompt"] = prompt
-        with st.spinner("Running agents..."):
-            brands = brand_agent.extract_brand(prompt)
-            category = category_agent.extract_category(prompt)
+        brands: List[str] = []
+        category: str = ""
+        active_agents: List[str] = []
 
-        show_results(prompt, brands, category)
+        # Only invoke agents that are currently enabled
+        with st.spinner("Running agents..."):
+            if use_brand_agent:
+                brands = brand_agent.extract_brand(prompt)
+                active_agents.append("Brand")
+            if use_category_agent:
+                category = category_agent.extract_category(prompt)
+                active_agents.append("Category")
+
+        show_results(prompt, brands, category, active_agents)
 
 
 if __name__ == "__main__":
