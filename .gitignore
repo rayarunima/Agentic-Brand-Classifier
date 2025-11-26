@@ -11,6 +11,7 @@ env/
 venv/
 .env/
 .venv/
+agentic_poc/
 
 # Distribution / packaging
 dist/

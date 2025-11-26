@@ -1,5 +1,7 @@
 import spacy
 from spacy.cli import download
+# Ensure curated transformer components are registered before loading model
+import spacy_curated_transformers  # noqa: F401
 
 # Upgrade to transformer-based model for better NER
 MODEL_NAME = "en_core_web_trf"
