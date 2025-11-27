@@ -106,20 +106,6 @@ The script:
 4. **VS Code debugging (optional)**
    - Use the provided `.vscode/launch.json` target **Run brand classifier** to execute `main.py` under the debugger. The configuration automatically loads the virtualenv interpreter and `.env` values.
 
-## Enhancement roadmap
-
-- **SpaCy caching/latency**: keep the `en_core_web_trf` pipeline warm via a simple
-  service object so repeated `extract_entities` calls in Streamlit stay under
-  50 ms.
-- **Richer brand prompts**: inject brand/product context (specs, geography) into
-  the DSPy signature to reduce hallucinated labels.
-- **Evidence scoring toggle**: re-enable SerpAPI lookups when the API key is
-  available and surface hit counts in the UI.
-- **Telemetry**: log prompt + predictions (scrubbed) for demo QA and export
-  samples quickly.
-- **Additional agents**: wire `ReachEstimatorAgent` / `BrandLiftAgent` into the
-  Streamlit layout once their implementations stabilize.
-
 ## Verification checklist
 
 - `streamlit run ui/app.py` — Manual test the interactive flow (custom prompt +
@@ -127,8 +113,4 @@ The script:
 - `python main.py` — Ensure CLI output still lists 5 prompts with brand/category.
 - Optional: enable `SERPAPI_API_KEY` and confirm evidence toggles once wired.
 
-## Open questions for the next sync
 
-1. Should the demo capture telemetry (e.g., S3 or local JSON) for later review?
-2. Which additional agents (reach/brand lift) should be prioritized for wiring
-   into the UI before the executive demo date?
