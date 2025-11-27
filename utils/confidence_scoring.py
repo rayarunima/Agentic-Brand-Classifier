@@ -126,14 +126,24 @@ def calculate_brand_confidence(
     else:
         ratio_score = weights["extraction_ratio"] * 0.5
     
-    # Factor 5: Keyword presence
+    # Factor 5: Keyword presence (boost for explicitly mentioned brands)
     keyword_score = 0.0
+    explicit_mentions = 0
     if prompt:
         # Check if brand names appear in prompt (exact or partial)
         prompt_lower = prompt.lower()
-        brand_mentions = sum(1 for brand in brands if brand.lower() in prompt_lower)
-        if brand_mentions > 0:
-            keyword_score = (brand_mentions / len(brands)) * weights["keyword_match"]
+        for brand in brands:
+            brand_lower = brand.lower()
+            # Check for exact word match (word boundaries)
+            import re
+            word_pattern = r'\b' + re.escape(brand_lower) + r'\b'
+            if re.search(word_pattern, prompt_lower):
+                explicit_mentions += 1
+        
+        if explicit_mentions > 0:
+            # Strong boost if brands are explicitly mentioned
+            mention_ratio = explicit_mentions / len(brands)
+            keyword_score = mention_ratio * weights["keyword_match"] * 1.5  # 1.5x boost for explicit mentions
     
     # Factor 6: Contextual signals (if provided)
     context_boost = 0.0

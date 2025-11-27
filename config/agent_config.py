@@ -123,6 +123,64 @@ BRAND_RELATIONSHIPS = _external_config.get("brand_relationships") or {
     }
 }
 
+# Brand-to-Category mappings (for category inference from brands)
+BRAND_TO_CATEGORY = _external_config.get("brand_to_category") or {
+    # Electronics brands
+    "Philips": "Electronics",
+    "Sony": "Electronics",
+    "LG": "Electronics",
+    "Epson": "Electronics",
+    "Bose": "Electronics",
+    "Yamaha": "Electronics",
+    "JBL": "Electronics",
+    "Harman Kardon": "Electronics",
+    "Bang & Olufsen": "Electronics",
+    "Marantz": "Electronics",
+    "Samsung": "Electronics",
+    "Apple": "Electronics",
+    "Xiaomi": "Electronics",
+    "OnePlus": "Electronics",
+    "Oppo": "Electronics",
+    "Vivo": "Electronics",
+    "Google": "Electronics",
+    "Microsoft": "Electronics",
+    "Dell": "Electronics",
+    "HP": "Electronics",
+    "Lenovo": "Electronics",
+    "Asus": "Electronics",
+    "Acer": "Electronics",
+    "TCL": "Electronics",
+    "BenQ": "Electronics",
+    "Nokia": "Electronics",
+    "Motorola": "Electronics",
+    "Realme": "Electronics",
+    # Media/Streaming brands
+    "Netflix": "Media",
+    "YouTube": "Media",
+    "TikTok": "Media",
+    "ByteDance": "Media",
+    "Amazon Prime Video": "Media",
+    "Disney+": "Media",
+    "Hulu": "Media",
+    "HBO Max": "Media",
+    "Vimeo": "Media",
+    "Dailymotion": "Media",
+    "Twitch": "Media",
+    # Social Media brands
+    "Meta": "Social Media",
+    "Facebook": "Social Media",
+    "Instagram": "Social Media",
+    "Twitter": "Social Media",
+    "Snapchat": "Social Media",
+    "LinkedIn": "Social Media",
+    # E-commerce brands
+    "Amazon": "E-commerce",
+    "eBay": "E-commerce",
+    "Alibaba": "E-commerce",
+    "Walmart": "E-commerce",
+    "Target": "E-commerce"
+}
+
 # Confidence thresholds (configurable)
 CONFIDENCE_THRESHOLDS = _external_config.get("confidence_thresholds") or {
     "very_high": 0.9,
@@ -161,6 +219,11 @@ def get_brand_tiers() -> Dict[str, List[str]]:
 def get_brand_relationships() -> Dict[str, Dict]:
     """Get brand relationships (parent companies, competitors, category mappings)."""
     return BRAND_RELATIONSHIPS.copy()
+
+
+def get_brand_to_category() -> Dict[str, str]:
+    """Get brand-to-category mappings for category inference."""
+    return BRAND_TO_CATEGORY.copy()
 
 
 # TODO: External call opportunity - Load brands from API/database

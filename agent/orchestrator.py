@@ -66,16 +66,17 @@ class AgentOrchestrator:
         Execute agent pipeline with intelligent orchestration.
         
         Execution order:
-        1. Brand & Category agents run in parallel (independent)
-        2. Campaign agent uses brand/category context
-        3. Reach agent uses campaign context
-        4. Brand Lift agent uses campaign context
+        1. Brand agent runs first
+        2. Category agent uses brand context for better inference
+        3. Campaign agent uses brand/category context
+        4. Reach agent uses campaign context
+        5. Brand Lift agent uses campaign context
         """
         context = OrchestrationContext(prompt=prompt)
         results = {}
         total_start = time.time()
         
-        # Phase 1: Independent agents (can run in parallel)
+        # Phase 1: Brand agent runs first (category agent will use its output)
         if enable_brand:
             start = time.time()
             try:
@@ -116,10 +117,25 @@ class AgentOrchestrator:
                     error=str(e)
                 )
         
+        # Category agent runs after brand agent to use brand context
         if enable_category:
             start = time.time()
             try:
-                category_result = self.category_agent.extract_category(prompt)
+                # Pass brand context to category agent for better inference
+                category_context = {}
+                if context.brands:
+                    # Pass brand names for category inference
+                    category_context["brands"] = context.brands
+                    # Also pass brand data if available from brand result
+                    if "brand" in results and results["brand"].success:
+                        brand_result_data = results["brand"].result
+                        if isinstance(brand_result_data, dict):
+                            brands_data = brand_result_data.get("brands", [])
+                            if brands_data:
+                                category_context["brands"] = brands_data  # Full brand data with scores
+                                category_context["brand_names"] = context.brands  # Just names for convenience
+                
+                category_result = self.category_agent.extract_category(prompt, context=category_context)
                 if isinstance(category_result, dict):
                     context.category = category_result.get("category", "")
                     results["category"] = AgentResult(

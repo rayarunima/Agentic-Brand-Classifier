@@ -10,7 +10,8 @@ from config.agent_config import (
     get_known_brands,
     get_category_keywords,
     get_brand_tiers,
-    get_brand_relationships
+    get_brand_relationships,
+    get_brand_to_category
 )
 
 __all__ = [
@@ -24,6 +25,7 @@ __all__ = [
     "get_known_brands",
     "get_category_keywords",
     "get_brand_tiers",
-    "get_brand_relationships"
+    "get_brand_relationships",
+    "get_brand_to_category"
 ]
 

@@ -2,16 +2,31 @@ import spacy
 from spacy.cli import download
 # Ensure curated transformer components are registered before loading model
 import spacy_curated_transformers  # noqa: F401
+import threading
 
 # Upgrade to transformer-based model for better NER
 MODEL_NAME = "en_core_web_trf"
+_nlp_lock = threading.Lock()
+_nlp_loaded = False
+
+# Load SpaCy model once (thread-safe)
 try:
     nlp = spacy.load(MODEL_NAME)
+    _nlp_loaded = True
 except OSError:
-    download(MODEL_NAME)
-    nlp = spacy.load(MODEL_NAME)
+    with _nlp_lock:
+        if not _nlp_loaded:
+            download(MODEL_NAME)
+            nlp = spacy.load(MODEL_NAME)
+            _nlp_loaded = True
 
 def extract_entities(sentence):
+    """
+    Extract entities from sentence using SpaCy.
+    Thread-safe: uses shared nlp model instance.
+    For batch processing, consider using nlp.pipe() instead.
+    """
+    # Use thread-safe processing (SpaCy models are thread-safe for inference)
     doc = nlp(sentence)
     result = {
         "tokens": [],

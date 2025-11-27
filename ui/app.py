@@ -3,7 +3,9 @@ Enhanced Streamlit UI with performance metrics, visualizations, and agent orches
 """
 import json
 import os
+import re
 import time
+import threading
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -23,7 +25,7 @@ from brand_extraction.entity_extractor import extract_entities
 from utils.performance import PerformanceTracker, get_memory_usage, get_cpu_usage, calculate_cost_savings
 
 
-STREAMLIT_TITLE = "Agentic Brand Classifier - Enterprise Demo"
+STREAMLIT_TITLE = "Agentic Brand Classifier - Enterprise Demo Purposes"
 SAMPLES_PATH = Path("prompts") / "sample_prompts.json"
 MORE_SAMPLES_PATH = Path("prompts") / "more_prompts.json"
 
@@ -37,24 +39,56 @@ if "orchestrator" not in st.session_state:
     st.session_state.orchestrator = None
 
 
-def configure_lm() -> None:
-    """Configure DSPy once per process."""
-    model_name = os.getenv("DSPY_MODEL_NAME", "ollama/phi3")
-    max_tokens = int(os.getenv("DSPY_MAX_TOKENS", "4096"))
-    temperature = float(os.getenv("DSPY_TEMPERATURE", "0.2"))
+# Global lock for DSPy configuration (thread safety)
+import threading
+_dspy_lock = threading.Lock()
+_dspy_configured = False
 
-    dspy.configure(
-        lm=dspy.LM(
-            model=model_name,
-            max_tokens=max_tokens,
-            temperature=temperature,
-        )
-    )
+def configure_lm() -> None:
+    """Configure DSPy once per process with thread safety."""
+    global _dspy_configured
+    
+    # Fast path: already configured
+    if _dspy_configured:
+        return
+    
+    # Thread-safe configuration
+    with _dspy_lock:
+        # Double-check after acquiring lock
+        if _dspy_configured:
+            return
+        
+        try:
+            # Check if DSPy is already configured
+            if hasattr(dspy.settings, 'lm') and dspy.settings.lm is not None:
+                _dspy_configured = True
+                return
+        except:
+            pass
+        
+        model_name = os.getenv("DSPY_MODEL_NAME", "ollama/phi3")
+        max_tokens = int(os.getenv("DSPY_MAX_TOKENS", "4096"))
+        temperature = float(os.getenv("DSPY_TEMPERATURE", "0.2"))
+
+        try:
+            dspy.configure(
+                lm=dspy.LM(
+                    model=model_name,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+            )
+            _dspy_configured = True
+        except RuntimeError:
+            # Already configured in another thread, mark as configured
+            _dspy_configured = True
+            pass
 
 
 @st.cache_resource(show_spinner=False)
 def load_orchestrator():
     """Load the agent orchestrator."""
+    # Configure DSPy before creating orchestrator
     configure_lm()
     return AgentOrchestrator()
 
@@ -196,12 +230,106 @@ def extract_brand_names(brands_data: Any) -> List[str]:
     return []
 
 
-def format_brands_display(brands_data: Any) -> str:
+# Invalid brand names to filter out
+INVALID_BRAND_PATTERNS = [
+    "related_brands", "competitors", "alternatives", "examples",
+    "these are", "dict", "list", "brands", "category", "type",
+    "parent", "competitor", "category_related", "dspy_inferred",
+    "no brand", "no brand names", "no brand name", "n/a", "none",
+    "not mentioned", "not found", "no brands", "brand names were not",
+    "were mentioned", "in the input", "in the given", "context"
+]
+
+def is_valid_brand_name(name: str) -> bool:
+    """Check if a brand name is valid (not a placeholder or invalid pattern)."""
+    if not name or len(name) < 2:
+        return False
+    
+    name_lower = name.lower().strip()
+    
+    # Skip if it's a sentence or explanation (contains multiple words that look like a sentence)
+    words = name_lower.split()
+    if len(words) > 5:  # Likely a sentence, not a brand name
+        return False
+    
+    # Skip invalid patterns
+    for pattern in INVALID_BRAND_PATTERNS:
+        if pattern in name_lower or name_lower == pattern:
+            return False
+    
+    # Skip if it looks like a Python structure
+    if any(char in name for char in ["{", "}", "[", "]", "'", "dict", "list"]):
+        return False
+    
+    # Skip if it starts with special characters
+    if name.startswith(("{", "[", "'", '"', "(", "/", "//")):
+        return False
+    
+    # Skip if it contains common explanation phrases
+    explanation_phrases = ["were mentioned", "in the input", "in the given", "no brand", "not found"]
+    if any(phrase in name_lower for phrase in explanation_phrases):
+        return False
+    
+    return True
+
+
+def format_brands_simple(brands_data: Any, max_brands: int = 5) -> str:
+    """
+    Format brands as simple comma-separated list for history table.
+    
+    Args:
+        brands_data: Can be list of dicts with 'name' or list of strings
+        max_brands: Maximum number of brands to display
+        
+    Returns:
+        Simple comma-separated string of brand names
+    """
+    if not brands_data:
+        return "—"
+    
+    if isinstance(brands_data, list):
+        brand_names = []
+        seen = set()
+        
+        for brand in brands_data:
+            if isinstance(brand, dict):
+                name = str(brand.get("name", "")).strip()
+            elif isinstance(brand, str):
+                name = brand.strip()
+            else:
+                continue
+            
+            if not name or not is_valid_brand_name(name):
+                continue
+            
+            name = name.strip("'\"")
+            name_lower = name.lower()
+            
+            # Skip duplicates
+            if name_lower in seen:
+                continue
+            seen.add(name_lower)
+            
+            brand_names.append(name)
+            
+            if len(brand_names) >= max_brands:
+                break
+        
+        if not brand_names:
+            return "—"
+        
+        return ", ".join(brand_names)
+    
+    return "—"
+
+
+def format_brands_display(brands_data: Any, max_brands: int = 10) -> str:
     """
     Format brands for display in the format: "Brand1 (score1) | Brand2 (score2) | ..."
     
     Args:
         brands_data: Can be list of dicts with 'name' and 'match_score', or list of strings
+        max_brands: Maximum number of brands to display (to avoid clutter)
         
     Returns:
         Formatted string for display
@@ -212,15 +340,65 @@ def format_brands_display(brands_data: Any) -> str:
     if isinstance(brands_data, list):
         if len(brands_data) > 0 and isinstance(brands_data[0], dict):
             # New format: list of dicts with scores
-            formatted = []
+            # Remove duplicates and clean up
+            seen = set()
+            unique_brands = []
+            
             for brand in brands_data:
-                name = brand.get("name", "")
+                if not isinstance(brand, dict):
+                    continue
+                    
+                name = str(brand.get("name", "")).strip()
+                
+                # Skip if not a valid brand name
+                if not is_valid_brand_name(name):
+                    continue
+                
+                # Normalize name (remove quotes if present)
+                name = name.strip("'\"")
+                
+                # Skip duplicates (case-insensitive)
+                name_lower = name.lower()
+                if name_lower in seen:
+                    continue
+                seen.add(name_lower)
+                
                 score = brand.get("match_score", 0.0)
-                formatted.append(f"{name} ({score:.1f})")
-            return " | ".join(formatted)
+                # Ensure score is a number
+                try:
+                    score = float(score)
+                except (ValueError, TypeError):
+                    score = 0.0
+                
+                unique_brands.append((name, score))
+            
+            # Sort by score (descending) and limit
+            unique_brands.sort(key=lambda x: x[1], reverse=True)
+            unique_brands = unique_brands[:max_brands]
+            
+            if not unique_brands:
+                return "—"
+            
+            # Format as percentages with better spacing
+            formatted = []
+            for name, score in unique_brands:
+                # Convert score (0.0-1.0) to percentage (0-100)
+                percentage = int(round(score * 100))
+                formatted.append(f"{name} ({percentage}%)")
+            
+            # Join with better spacing (extra spaces around separator)
+            return "  |  ".join(formatted)
         else:
             # Old format: list of strings (backward compatibility)
-            return ", ".join(str(b) for b in brands_data if b)
+            # Remove duplicates
+            seen = set()
+            unique = []
+            for b in brands_data:
+                b_str = str(b).strip().strip("'\"")
+                if is_valid_brand_name(b_str) and b_str.lower() not in seen:
+                    seen.add(b_str.lower())
+                    unique.append(b_str)
+            return ", ".join(unique[:max_brands])
     
     return "—"
 
@@ -434,6 +612,147 @@ def render_visualizations(results: Dict, prompt: str):
                 st.info("Run more queries to see category distribution")
 
 
+def render_brands_carousel(brands_data: Any, max_brands: int = 5):
+    """
+    Render top 5 brands in a clean grid layout without scrolling.
+    Brands are color-coded: green (>= 80%), orange (50-80%), purple (< 50%).
+    Scores are displayed as percentages.
+    
+    Args:
+        brands_data: List of brand dicts with 'name' and 'match_score' (0-1 range)
+        max_brands: Maximum number of brands to display (default: 5)
+    """
+    if not brands_data or not isinstance(brands_data, list):
+        st.write("**Brands:** —")
+        return
+    
+    if len(brands_data) == 0 or not isinstance(brands_data[0], dict):
+        st.write("**Brands:** —")
+        return
+    
+    # Filter and process brands, separating explicit brands and parent companies
+    seen = set()
+    unique_brands = []
+    parent_companies = []
+    parent_names_set = set()  # Track parent company names for labeling
+    
+    for brand in brands_data:
+        if not isinstance(brand, dict):
+            continue
+            
+        name = str(brand.get("name", "")).strip()
+        
+        # Skip if not a valid brand name
+        if not is_valid_brand_name(name):
+            continue
+        
+        name = name.strip("'\"")
+        name_lower = name.lower()
+        
+        # Skip duplicates
+        if name_lower in seen:
+            continue
+        seen.add(name_lower)
+        
+        score = brand.get("match_score", 0.0)
+        brand_type = brand.get("type", "")
+        try:
+            score = float(score)
+        except (ValueError, TypeError):
+            score = 0.0
+        
+        # Separate parent companies to show them separately
+        if brand_type == "parent":
+            parent_companies.append((name, score))
+            parent_names_set.add(name_lower)
+        else:
+            unique_brands.append((name, score, brand_type))  # Include type for reference
+    
+    # Sort by score (descending)
+    unique_brands.sort(key=lambda x: x[1], reverse=True)
+    parent_companies.sort(key=lambda x: x[1], reverse=True)
+    
+    # Prioritize showing parent companies if they exist (e.g., ByteDance for TikTok, Google for YouTube)
+    # Strategy: Show top explicit brands, but always include parent companies even if it exceeds max_brands
+    display_brands = [(name, score) for name, score, _ in unique_brands[:max_brands]]
+    
+    # Always add parent companies if they exist (they're important relationships)
+    for parent_name, parent_score in parent_companies:
+        # Check if parent is already in display list
+        if not any(name.lower() == parent_name.lower() for name, _ in display_brands):
+            display_brands.append((parent_name, parent_score))
+    
+    # Re-sort to maintain score order
+    display_brands.sort(key=lambda x: x[1], reverse=True)
+    unique_brands = display_brands
+    
+    if not unique_brands:
+        st.write("**Brands:** —")
+        return
+    
+    # Add custom CSS for compact brand cards
+    st.markdown("""
+    <style>
+    .brand-card-container {
+        padding: 8px 10px;
+        border-radius: 6px;
+        text-align: center;
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        margin-bottom: 6px;
+    }
+    .brand-card-high {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    .brand-card-medium {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    .brand-card-low {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"**Brands:** ({len(unique_brands)} found)")
+    
+    # Use Streamlit columns for compact responsive grid layout (up to 5 columns)
+    num_cols = min(5, len(unique_brands))
+    if num_cols > 0:
+        cols = st.columns(num_cols)
+        
+        for idx, (name, score) in enumerate(unique_brands):
+            # Convert score to percentage
+            percentage = int(round(score * 100))
+            
+            # Determine color class based on percentage
+            if percentage >= 80:
+                color_class = "brand-card-high"
+            elif percentage >= 50:
+                color_class = "brand-card-medium"
+            else:
+                color_class = "brand-card-low"
+            
+            # Render in column (use modulo to wrap if needed)
+            col_idx = idx % num_cols
+            with cols[col_idx]:
+                # Check if this is a parent company to add a label
+                is_parent = name.lower() in parent_names_set
+                parent_label = " (Parent)" if is_parent else ""
+                
+                st.markdown(
+                    f'<div class="brand-card-container {color_class}">'
+                    f'<div style="font-size: 13px; margin-bottom: 2px; line-height: 1.2;">{name}{parent_label}</div>'
+                    f'<div style="font-size: 11px; opacity: 0.95;">{percentage}%</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+    
+    # Show total count if there are more brands
+    if len(brands_data) > max_brands:
+        st.caption(f"*Showing top {max_brands} of {len(brands_data)} brands*")
+
+
 def render_results(orchestration_result: Dict, prompt: str, show_metrics: bool):
     """Render comprehensive results with all agent outputs."""
     results = orchestration_result.get("results", {})
@@ -460,16 +779,15 @@ def render_results(orchestration_result: Dict, prompt: str, show_metrics: bool):
             brands_data = brand_result if isinstance(brand_result, list) else []
             confidence = results["brand"].confidence
         
-        if brands_data:
-            # Format brands with scores
-            brands_display = format_brands_display(brands_data)
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.write("**Brands:**", brands_display)
-            with col2:
-                st.metric("Confidence", f"{confidence * 100:.1f}%")
-        else:
-            st.write("**Brands:** —")
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            if brands_data:
+                # Use modern grid display (top 5 brands, including parent companies)
+                render_brands_carousel(brands_data, max_brands=5)
+            else:
+                st.write("**Brands:** —")
+        with col2:
+            st.metric("Confidence", f"{confidence * 100:.1f}%")
     
     # Category results
     if "category" in results and results["category"].success:
@@ -481,6 +799,27 @@ def render_results(orchestration_result: Dict, prompt: str, show_metrics: bool):
             category = category_result if isinstance(category_result, str) else ""
             confidence = results["category"].confidence
         
+        # Clean category string - remove placeholders and invalid values
+        if category:
+            category = str(category).strip()
+            # Remove common placeholders
+            if category in ["{category}", "category", "None", "null", ""]:
+                category = ""
+            
+            # Remove duplicates from category string (e.g., "Electronics, Electronics" -> "Electronics")
+            if category:
+                # Split by comma and clean each part
+                category_parts = [cat.strip() for cat in category.split(",")]
+                # Remove duplicates while preserving order (case-insensitive)
+                seen = set()
+                unique_parts = []
+                for part in category_parts:
+                    part_lower = part.lower()
+                    if part_lower not in seen and part:  # Also skip empty parts
+                        seen.add(part_lower)
+                        unique_parts.append(part)
+                category = ", ".join(unique_parts)
+        
         if category:
             col1, col2 = st.columns([3, 1])
             with col1:
@@ -489,6 +828,142 @@ def render_results(orchestration_result: Dict, prompt: str, show_metrics: bool):
                 st.metric("Confidence", f"{confidence * 100:.1f}%")
         else:
             st.write("**Category:** —")
+        
+        # Confidence Score Evaluation (moved below Category)
+        if "brand" in results and results["brand"].success:
+            brand_result = results["brand"].result
+            if isinstance(brand_result, dict):
+                st.divider()
+                
+                # Center the confidence section
+                st.subheader("📊 Confidence Score Evaluation")
+                
+                confidence = brand_result.get("confidence", 0.0)
+                ner_entity_count = brand_result.get("ner_entity_count", 0)
+                matched_entities = brand_result.get("matched_entities", 0)
+                brands_list = brand_result.get("brands", [])
+                
+                # Centered layout with empty columns on sides
+                col_empty1, col1, col2, col3, col4, col5, col_empty2 = st.columns([1, 1.5, 1.5, 1.5, 1.5, 1.5, 1])
+                with col1:
+                    st.metric("**Overall Confidence**", f"{confidence * 100:.1f}%")
+                with col2:
+                    st.metric("NER Entities", ner_entity_count)
+                with col3:
+                    st.metric("Matched Brands", matched_entities)
+                with col4:
+                    if brands_list:
+                        scores = [b.get("match_score", 0.0) for b in brands_list if isinstance(b, dict)]
+                        avg_score = sum(scores) / len(scores) if scores else 0.0
+                        st.metric("Avg Match", f"{avg_score * 100:.1f}%")
+                    else:
+                        st.metric("Avg Match", "0%")
+                with col5:
+                    if confidence >= 0.8:
+                        conf_level = "High 🟢"
+                    elif confidence >= 0.5:
+                        conf_level = "Medium 🟡"
+                    else:
+                        conf_level = "Low 🔴"
+                    st.metric("Level", conf_level)
+                
+                # Detailed analysis in expander (collapsed by default)
+                with st.expander("🔍 Detailed Confidence Analysis & Accuracy Factors", expanded=False):
+                    st.write("**Confidence Factors:**")
+                    
+                    if ner_entity_count > 0:
+                        ner_ratio = matched_entities / ner_entity_count if ner_entity_count > 0 else 0
+                        st.write(f"• **NER Entity Match Rate:** {ner_ratio * 100:.1f}% ({matched_entities}/{ner_entity_count} entities matched)")
+                    else:
+                        st.write("• **NER Entity Match Rate:** No NER entities found (using DSPy inference)")
+                    
+                    if brands_list and prompt:
+                        prompt_lower = prompt.lower()
+                        explicit_brands = []
+                        inferred_brands = []
+                        
+                        for b in brands_list:
+                            if isinstance(b, dict):
+                                brand_name = b.get("name", "")
+                                brand_lower = brand_name.lower()
+                                word_pattern = r'\b' + re.escape(brand_lower) + r'\b'
+                                if re.search(word_pattern, prompt_lower):
+                                    explicit_brands.append(brand_name)
+                                elif b.get("is_inferred", False) or b.get("type") in ["parent", "competitor", "category_related"]:
+                                    inferred_brands.append(brand_name)
+                        
+                        if explicit_brands:
+                            st.write(f"• **Explicitly Mentioned Brands:** {', '.join(explicit_brands)} (100% match accuracy)")
+                        if inferred_brands:
+                            st.write(f"• **Inferred Brands:** {', '.join(inferred_brands)} (relationship-based)")
+                        
+                        if brands_list:
+                            explicit_ratio = len(explicit_brands) / len(brands_list) if brands_list else 0
+                            st.write(f"• **Explicit Mention Ratio:** {explicit_ratio * 100:.1f}% (higher = more accurate)")
+                    
+                    if len(brands_list) > 0:
+                        high_confidence_brands = sum(1 for b in brands_list if isinstance(b, dict) and b.get("match_score", 0) >= 0.8)
+                        perfect_matches = sum(1 for b in brands_list if isinstance(b, dict) and b.get("match_score", 0) >= 0.95)
+                        st.write(f"• **High Confidence Brands:** {high_confidence_brands} out of {len(brands_list)} brands have ≥80% match")
+                        st.write(f"• **Perfect Matches (100%):** {perfect_matches} brands explicitly mentioned in prompt")
+                    
+                    # Parent company detection
+                    parent_brands = [b for b in brands_list if isinstance(b, dict) and b.get("type") == "parent"]
+                    if parent_brands:
+                        parent_names = [b.get("name") for b in parent_brands]
+                        st.write(f"• **Parent Companies Detected:** {', '.join(parent_names)} (inferred relationships)")
+                    
+                    # Accuracy factors
+                    st.write("\n**Accuracy Factors:**")
+                    
+                    # Calculate accuracy score
+                    accuracy_factors = []
+                    accuracy_score = 0.0
+                    
+                    if brands_list:
+                        # Factor 1: Explicit mention ratio
+                        if explicit_brands:
+                            explicit_factor = len(explicit_brands) / len(brands_list)
+                            accuracy_score += explicit_factor * 0.4
+                            accuracy_factors.append(f"Explicit mentions: +{explicit_factor * 40:.1f}%")
+                         
+                        # Factor 2: Perfect match ratio
+                        if perfect_matches > 0:
+                            perfect_factor = perfect_matches / len(brands_list)
+                            accuracy_score += perfect_factor * 0.3
+                            accuracy_factors.append(f"Perfect matches: +{perfect_factor * 30:.1f}%")
+                        
+                        # Factor 3: High confidence ratio
+                        if high_confidence_brands > 0:
+                            high_conf_factor = high_confidence_brands / len(brands_list)
+                            accuracy_score += high_conf_factor * 0.2
+                            accuracy_factors.append(f"High confidence: +{high_conf_factor * 20:.1f}%")
+                        
+                        # Factor 4: NER entity support
+                        if ner_entity_count > 0 and matched_entities > 0:
+                            ner_factor = matched_entities / ner_entity_count
+                            accuracy_score += ner_factor * 0.1
+                            accuracy_factors.append(f"NER support: +{ner_factor * 10:.1f}%")
+                    
+                    for factor in accuracy_factors:
+                        st.write(f"  - {factor}")
+                    
+                    # Display accuracy score
+                    accuracy_percentage = min(100, accuracy_score * 100)
+                    st.metric("**Overall Accuracy Score**", f"{accuracy_percentage:.1f}%")
+                    
+                    # Overall assessment
+                    st.write("\n**Overall Assessment:**")
+                    if confidence >= 0.8 and accuracy_score >= 0.7:
+                        st.success("✅ **High confidence & High accuracy** - Strong brand signals with explicit mentions and reliable entity matching.")
+                    elif confidence >= 0.8:
+                        st.success("✅ **High confidence** - Strong brand signals detected, but some may be inferred relationships.")
+                    elif confidence >= 0.5 and accuracy_score >= 0.5:
+                        st.warning("⚠️ **Medium confidence & Medium accuracy** - Some brand signals detected with mixed explicit/inferred sources.")
+                    elif confidence >= 0.5:
+                        st.warning("⚠️ **Medium confidence** - Some brand signals detected, but mostly inferred relationships.")
+                    else:
+                        st.error("❌ **Low confidence** - Limited brand signals, mostly inferred from context. Results may be less reliable.")
     
     # Campaign results
     if "campaign" in results and results["campaign"].success:
@@ -587,12 +1062,20 @@ def process_batch(
     agent_config: Dict[str, bool],
     max_workers: int = 5
 ) -> List[Dict[str, Any]]:
-    """Process multiple prompts in parallel using ThreadPoolExecutor."""
+    """
+    Process multiple prompts in parallel using ThreadPoolExecutor.
+    Optimized for performance with proper thread safety.
+    """
     results = []
     
+    # Ensure DSPy is configured before threading (critical for performance)
+    configure_lm()
+    
     def process_single(prompt: str) -> Dict[str, Any]:
-        """Process a single prompt."""
+        """Process a single prompt with error handling."""
         try:
+            # Use the shared orchestrator instance (thread-safe for read operations)
+            # Each agent internally handles thread safety for DSPy calls
             result = orchestrator.execute_pipeline(
                 prompt=prompt,
                 enable_brand=agent_config["brand"],
@@ -605,8 +1088,14 @@ def process_batch(
         except Exception as e:
             return {"prompt": prompt, "result": None, "success": False, "error": str(e)}
     
-    # Process in parallel
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+    # Optimize max_workers: don't exceed prompt count or CPU cores
+    import os
+    cpu_count = os.cpu_count() or 4
+    optimal_workers = min(max_workers, len(prompts), cpu_count)
+    
+    # Process in parallel with optimized worker count
+    with ThreadPoolExecutor(max_workers=optimal_workers) as executor:
+        # Submit all tasks at once for better scheduling
         futures = {executor.submit(process_single, prompt): prompt for prompt in prompts}
         
         progress_bar = st.progress(0)
@@ -615,12 +1104,26 @@ def process_batch(
         completed = 0
         total = len(prompts)
         
+        # Process results as they complete (non-blocking)
         for future in as_completed(futures):
-            result = future.result()
-            results.append(result)
-            completed += 1
-            progress_bar.progress(completed / total)
-            status_text.text(f"Processed {completed}/{total} prompts...")
+            try:
+                result = future.result(timeout=300)  # 5 min timeout per prompt
+                results.append(result)
+                completed += 1
+                progress_bar.progress(completed / total)
+                status_text.text(f"Processed {completed}/{total} prompts...")
+            except Exception as e:
+                # Handle timeout or other errors
+                prompt = futures[future]
+                results.append({
+                    "prompt": prompt,
+                    "result": None,
+                    "success": False,
+                    "error": f"Timeout or error: {str(e)}"
+                })
+                completed += 1
+                progress_bar.progress(completed / total)
+                status_text.text(f"Processed {completed}/{total} prompts... (some failed)")
     
     return results
 
@@ -661,11 +1164,24 @@ def render_batch_processing(orchestrator: AgentOrchestrator, agent_config: Dict[
     
     st.info(f"Ready to process {len(prompts)} prompts")
     
-    max_workers = st.slider("Parallel workers", 1, 10, 5, help="Number of concurrent requests")
+    import os
+    cpu_count = os.cpu_count() or 4
+    max_workers = st.slider(
+        "Parallel workers", 
+        1, 
+        min(10, cpu_count), 
+        min(5, cpu_count),
+        help=f"Number of concurrent requests (CPU cores: {cpu_count})"
+    )
     
     if st.button("🚀 Process Batch", use_container_width=True):
         if len(prompts) > 20:
             st.warning(f"⚠️ Processing {len(prompts)} prompts may take a while. Consider reducing the batch size.")
+        
+        # Performance tip: Disable optional agents for faster batch processing
+        optional_agents_enabled = agent_config.get("campaign", False) or agent_config.get("reach", False) or agent_config.get("brand_lift", False)
+        if optional_agents_enabled and len(prompts) > 3:
+            st.info("💡 **Tip**: Disable Campaign/Reach/Brand Lift agents in sidebar for faster batch processing")
         
         start_time = time.time()
         batch_results = process_batch(prompts, orchestrator, agent_config, max_workers)
@@ -773,8 +1289,45 @@ def render_query_history():
         st.info("No query history yet. Run some queries to see analytics.")
         return
     
+    # Prepare history data for display
+    history_data = []
+    for entry in st.session_state.query_history[-20:]:  # Last 20 queries
+        display_entry = entry.copy()
+        
+        # Format brands for display (simple format for history table)
+        if "brands" in display_entry and display_entry["brands"]:
+            brands_data = display_entry["brands"]
+            # Use simple format for cleaner history table display
+            display_entry["brands"] = format_brands_simple(brands_data, max_brands=5)
+        else:
+            display_entry["brands"] = "—"
+        
+        # Ensure category is a string
+        if "category" in display_entry:
+            category = display_entry.get("category", "")
+            if not category or category == "":
+                display_entry["category"] = "—"
+        else:
+            display_entry["category"] = "—"
+        
+        history_data.append(display_entry)
+    
     # Show recent queries
-    df_history = pd.DataFrame(st.session_state.query_history[-20:])  # Last 20 queries
+    df_history = pd.DataFrame(history_data)
+    
+    # Reorder columns for better readability (timestamp, prompt, brands, category, latency)
+    if not df_history.empty:
+        preferred_order = ["timestamp", "prompt", "brands", "category", "latency_ms"]
+        # Only include columns that exist
+        columns_order = [col for col in preferred_order if col in df_history.columns]
+        # Add any remaining columns
+        remaining_cols = [col for col in df_history.columns if col not in columns_order]
+        df_history = df_history[columns_order + remaining_cols]
+        
+        # Rename latency_ms for better display
+        if "latency_ms" in df_history.columns:
+            df_history = df_history.rename(columns={"latency_ms": "Latency (ms)"})
+    
     st.dataframe(df_history, use_container_width=True, hide_index=True)
     
     # Analytics
@@ -785,22 +1338,33 @@ def render_query_history():
         all_brands = []
         for brands_list in df_history["brands"].dropna():
             if isinstance(brands_list, list):
-                all_brands.extend(brands_list)
+                for brand in brands_list:
+                    # Extract brand name from dict or use string directly
+                    if isinstance(brand, dict):
+                        brand_name = brand.get("name", "")
+                        if brand_name:
+                            all_brands.append(brand_name)
+                    elif isinstance(brand, str):
+                        all_brands.append(brand)
         
         if all_brands:
             brand_counts = pd.Series(all_brands).value_counts().head(10)
-            fig = px.bar(
-                x=brand_counts.index,
-                y=brand_counts.values,
-                title="Top 10 Brands (All Time)",
-                labels={"x": "Brand", "y": "Count"}
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            if len(brand_counts) > 0:
+                fig = px.bar(
+                    x=brand_counts.index.tolist(),
+                    y=brand_counts.values.tolist(),
+                    title="Top 10 Brands (All Time)",
+                    labels={"x": "Brand", "y": "Count"}
+                )
+                st.plotly_chart(fig, use_container_width=True)
 
 
 def main():
     """Main application entry point."""
     load_dotenv()
+    
+    # Configure DSPy first (outside of cached function)
+    configure_lm()
     
     # Load orchestrator
     if st.session_state.orchestrator is None:
